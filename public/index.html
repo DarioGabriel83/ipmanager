@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Auth Section -->
+        <section id="auth-section" class="glass-panel active">
+            <h1 class="gradient-text">IP Manager</h1>
+            <p class="subtitle">Secure, fast, and dynamic IP management.</p>
+            
+            <div class="tabs">
+                <button id="tab-login" class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button id="tab-register" class="tab-btn" onclick="switchTab('register')">Register</button>
+            </div>
+
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                    <small class="input-hint">Mínimo 8 caracteres con mayúscula, minúscula, número y símbolo.</small>
+                </div>
+                <div class="input-group hidden" id="confirm-password-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password">
+                </div>
+                <button type="submit" id="auth-submit-btn" class="primary-btn">Login</button>
+                <p id="auth-error" class="error-msg"></p>
+                <p id="auth-success" class="success-msg"></p>
+            </form>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="glass-panel hidden">
+            <header class="dashboard-header">
+                <h1 class="gradient-text">Dashboard</h1>
+                <div class="user-controls">
+                    <span id="welcome-msg"></span>
+                    <button class="secondary-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <div class="tabs">
+                <button id="nav-dashboard" class="tab-btn active" onclick="switchMainTab('dashboard')">IPs</button>
+                <button id="nav-admin" class="tab-btn hidden" onclick="switchMainTab('admin')">Admin</button>
+            </div>
+
+            <div class="dashboard-content" id="view-dashboard">
+                <div class="table-header">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <h2>Managed IPs</h2>
+                        <a href="/api/public/ips" download="ips.csv" class="download-btn">Download CSV</a>
+                    </div>
+                    <input type="text" id="ip-search" class="search-input" placeholder="Search IPs or comments..." autocomplete="off">
+                </div>
+                
+                <div class="add-ip-panel">
+                    <h2>Add New IP</h2>
+                    <form id="add-ip-form" onsubmit="addIp(event)">
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="ip-address">IP Address</label>
+                                <input type="text" id="ip-address" placeholder="e.g. 192.168.1.1" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="ip-comment">Comment</label>
+                                <input type="text" id="ip-comment" placeholder="Optional description">
+                            </div>
+                            <button type="submit" class="primary-btn">Add IP</button>
+                        </div>
+                        <p id="add-ip-error" class="error-msg"></p>
+                    </form>
+                </div>
+
+                <div class="ip-list-panel">
+                    <div class="table-container">
+                        <table id="ip-table">
+                            <thead>
+                                <tr>
+                                    <th>IP Address</th>
+                                    <th>Comment</th>
+                                    <th>Added By</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ip-table-body">
+                                <!-- Dynamic Content -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="pagination-controls" class="pagination-controls"></div>
+                </div>
+            </div>
+
+            <!-- Admin Section View -->
+            <div class="dashboard-content hidden" id="view-admin">
+                <div class="ip-list-panel">
+                    <h2>User Management</h2>
+                    <div class="table-container">
+                        <table id="user-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-table-body">
+                                <!-- Dynamic Content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Background decorative elements -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    container_name: ip-manager
+    ports:
+      - "3210:3210"
+    environment:
+      - PORT=3210
+      - JWT_SECRET=VGjyABRe8MUv28HhEZWELEU49UVcJZpcBZ6Co7P6MkppawsoTbyHoWU6Hv25csbR
+      - LOG_ENABLED=true
+      - LOG_LEVEL=debug
+    volumes:
+      - ./db:/app/db
+    restart: unless-stopped
