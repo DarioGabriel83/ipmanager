@@ -135,3 +135,8 @@ db/*
 # Any potential backup or temporal database files
 db/*.bak
 db/*.tmp
+
+# Test files
+*test*
+test*
+test*

@@ -47,3 +47,6 @@ __tests__/
 *.test.js
 *.spec.js
 coverage/
+*test*
+test*
+test*
