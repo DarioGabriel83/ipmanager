@@ -78,7 +78,7 @@ const checkRateLimit = (req, res, next) => {
 
 const handleFailedLogin = (ip) => {
     let record = failedLoginAttempts.get(ip) || { attempts: 0, lockUntil: null, lockLevel: 0 };
-    
+
     // Si el bloqueo anterior expiró, se limpia la cantidad de intentos
     // pero se mantiene el nivel de bloqueo (lockLevel) para poder aplicar 
     // el retroceso exponencial si la persona insiste.
@@ -231,18 +231,28 @@ app.get('/api/public/ips', async (req, res) => {
     try {
         const path = require('path');
         const fs = require('fs');
+        const csv = require('csv-parser');
         const ipsFile = path.join(__dirname, 'db', 'ips.txt');
 
-        if (fs.existsSync(ipsFile)) {
-            // res.setHeader('Content-Type', 'text/csv');
-            // res.setHeader('Content-Disposition', 'attachment; filename="ips.csv"');
-            const fileStream = fs.createReadStream(ipsFile);
-            fileStream.pipe(res);
-        } else {
-            res.status(404).send('No IPs database found');
+        if (!fs.existsSync(ipsFile)) {
+            return res.status(404).send('No IPs database found');
         }
+
+        const columnValues = [];
+        fs.createReadStream(ipsFile)
+            .pipe(csv())
+            .on('data', (row) => {
+                if (row['ip_address']) columnValues.push(row['ip_address']);
+            })
+            .on('end', () => {
+                res.setHeader('Content-Type', 'text/plain');
+                res.send(columnValues.join('\n'));
+            })
+            .on('error', (err) => {
+                res.status(500).send('Error parsing IPs: ' + err.message);
+            });
     } catch (error) {
-        res.status(500).json({ message: 'Error retrieving CSV' });
+        res.status(500).json({ message: 'Error retrieving IPs: ' + error });
     }
 });
 

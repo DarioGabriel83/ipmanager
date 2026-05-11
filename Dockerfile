@@ -1,5 +1,5 @@
 # Use official Node.js lightweight image
-FROM node:lts-slim
+FROM node:slim
 
 # Set working directory inside the container
 WORKDIR /app
