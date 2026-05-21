@@ -227,7 +227,7 @@ app.delete('/api/ips/:id', authMiddleware, async (req, res) => {
 });
 
 // --- Public APIs ---
-app.get('/api/public/ips', async (req, res) => {
+app.get('/api/public/ips.csv', async (req, res) => {
     try {
         const path = require('path');
         const fs = require('fs');
@@ -246,6 +246,7 @@ app.get('/api/public/ips', async (req, res) => {
             })
             .on('end', () => {
                 res.setHeader('Content-Type', 'text/plain');
+                res.setHeader('Content-Disposition', 'attachment; filename="ips.csv"');
                 res.send(columnValues.join('\n'));
             })
             .on('error', (err) => {
