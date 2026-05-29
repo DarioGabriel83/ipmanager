@@ -26,6 +26,7 @@ The system monitors failed login attempts on its backend:
   - You can view all registered IPs via a table with built-in pagination.
   - It provides a search field at the top.
   - There is a button to request downloading the public database in `.csv` format (via the `/api/public/ips` endpoint).
+  - Each IP row includes a checkbox so multiple addresses can be selected and deleted at once.
   - From the left panel, you can add new IP addresses by entering a valid IP and a comment.
 - **Admin (Administrators Only):**
   - An extra tab will appear in the Dashboard for the 'admin' user.
@@ -153,7 +154,15 @@ Below is the technical documentation for each endpoint available in the backend 
   - `400 Bad Request`: Invalid IP format or missing `ip_address` field.
   - `409 Conflict`: The inserted IP address already exists in the file.
 
-#### 5. `DELETE /api/ips/:id`
+#### 5. `POST /api/ips/delete-bulk`
+- **Description:** Deletes multiple IP entries at once using their assigned IDs.
+- **Body (JSON):** `{ "ids": ["id1", "id2", "id3"] }`
+- **Responses:**
+  - `200 OK`: Bulk delete completed successfully.
+  - `400 Bad Request`: No IDs provided for deletion.
+  - `500 Internal Server Error`: Error during bulk delete.
+
+#### 6. `DELETE /api/ips/:id`
 - **Description:** Deletes an IP address based on its assigned `id`.
 - **URL Parameters:** `id` -> ID of the IP entry.
 - **Responses:**

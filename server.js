@@ -212,6 +212,81 @@ app.post('/api/ips', authMiddleware, async (req, res) => {
     }
 });
 
+app.post('/api/ips/import', authMiddleware, async (req, res) => {
+    const { ips } = req.body || {};
+    if (!Array.isArray(ips) || ips.length === 0) {
+        return res.status(400).json({ message: 'No IPs provided for import.' });
+    }
+
+    const uniqueIps = Array.from(new Set(ips.map(ip => String(ip).trim()).filter(Boolean)));
+    if (uniqueIps.length === 0) {
+        return res.status(400).json({ message: 'No valid IPs found to import.' });
+    }
+
+    try {
+        const existingIps = await readIps();
+        const existingSet = new Set(existingIps.map(entry => entry.ip_address));
+        const imported = [];
+        const skipped = [];
+
+        for (const ipAddress of uniqueIps) {
+            if (!isValidIp(ipAddress)) {
+                skipped.push({ ip_address: ipAddress, reason: 'invalid format' });
+                continue;
+            }
+
+            if (existingSet.has(ipAddress)) {
+                skipped.push({ ip_address: ipAddress, reason: 'duplicate' });
+                continue;
+            }
+
+            const newIp = {
+                id: Date.now().toString() + Math.random().toString(36).slice(2),
+                ip_address: ipAddress,
+                comment: 'Imported from file',
+                added_by: req.user.username,
+                timestamp: new Date().toISOString()
+            };
+
+            await writeIp(newIp);
+            imported.push(ipAddress);
+            existingSet.add(ipAddress);
+        }
+
+        return res.status(201).json({
+            message: `${imported.length} IP(s) imported, ${skipped.length} skipped.`,
+            imported,
+            skipped
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error importing IPs', error: error.message });
+    }
+});
+
+app.post('/api/ips/delete-bulk', authMiddleware, async (req, res) => {
+    const { ids } = req.body || {};
+    if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: 'No IDs provided for deletion.' });
+    }
+
+    try {
+        const results = { deleted: [], missing: [] };
+        for (const id of ids) {
+            try {
+                const ok = await deleteIp(id);
+                if (ok) results.deleted.push(id);
+                else results.missing.push(id);
+            } catch (e) {
+                results.missing.push(id);
+            }
+        }
+
+        return res.json({ message: `${results.deleted.length} deleted, ${results.missing.length} missing`, results });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error during bulk delete', error: error.message });
+    }
+});
+
 app.delete('/api/ips/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
     try {
@@ -227,7 +302,7 @@ app.delete('/api/ips/:id', authMiddleware, async (req, res) => {
 });
 
 // --- Public APIs ---
-app.get('/api/public/ips.csv', async (req, res) => {
+app.get('/api/public/ips', async (req, res) => {
     try {
         const path = require('path');
         const fs = require('fs');
