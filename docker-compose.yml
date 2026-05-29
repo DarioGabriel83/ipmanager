@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    container_name: ip-manager
+    container_name: ip-manager-app
     ports:
       - "3210:3210"
     environment:

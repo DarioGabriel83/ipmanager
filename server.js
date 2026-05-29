@@ -213,7 +213,7 @@ app.post('/api/ips', authMiddleware, async (req, res) => {
 });
 
 app.post('/api/ips/import', authMiddleware, async (req, res) => {
-    const { ips } = req.body || {};
+    const { ips, comment, source_filename } = req.body || {};
     if (!Array.isArray(ips) || ips.length === 0) {
         return res.status(400).json({ message: 'No IPs provided for import.' });
     }
@@ -222,6 +222,14 @@ app.post('/api/ips/import', authMiddleware, async (req, res) => {
     if (uniqueIps.length === 0) {
         return res.status(400).json({ message: 'No valid IPs found to import.' });
     }
+
+    const resolvedComment = comment
+        ? source_filename
+            ? `${comment} (${source_filename})`
+            : comment
+        : source_filename
+            ? `Imported from ${source_filename}`
+            : 'Imported from file';
 
     try {
         const existingIps = await readIps();
@@ -243,7 +251,7 @@ app.post('/api/ips/import', authMiddleware, async (req, res) => {
             const newIp = {
                 id: Date.now().toString() + Math.random().toString(36).slice(2),
                 ip_address: ipAddress,
-                comment: 'Imported from file',
+                comment: resolvedComment,
                 added_by: req.user.username,
                 timestamp: new Date().toISOString()
             };

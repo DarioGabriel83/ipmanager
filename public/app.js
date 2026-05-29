@@ -239,7 +239,7 @@ async function addIp(e) {
                                 'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${currentToken}`
                             },
-                            body: JSON.stringify({ ips: ranges })
+                            body: JSON.stringify({ ips: ranges, comment })
                         });
 
                         const data = await response.json();
@@ -400,7 +400,7 @@ async function importIps(e) {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${currentToken}`
                 },
-                body: JSON.stringify({ ips: ipAddresses })
+                body: JSON.stringify({ ips: ipAddresses, source_filename: file.name })
             });
 
             const data = await response.json();
