@@ -162,7 +162,7 @@ Below is the technical documentation for each endpoint available in the backend 
   - `400 Bad Request`: No IDs provided for deletion.
   - `500 Internal Server Error`: Error during bulk delete.
 
-#### 6. `DELETE /api/ips/:id`
+#### 7. `DELETE /api/ips/:id`
 - **Description:** Deletes an IP address based on its assigned `id`.
 - **URL Parameters:** `id` -> ID of the IP entry.
 - **Responses:**
@@ -173,7 +173,7 @@ Below is the technical documentation for each endpoint available in the backend 
 
 ### Data Download (Public)
 
-#### 6. `GET /api/public/ips`
+#### 8. `GET /api/public/ips`
 - **Description:** A public endpoint serving the direct raw download of the stored IPs file on the server. Requested in the frontend to export data as a `.csv`.
 - **Responses:**
   - `200 OK`: Stream with the contents of `db/ips.txt`.
@@ -184,26 +184,26 @@ Below is the technical documentation for each endpoint available in the backend 
 ### Management and Administration (Admins Only)
 *These endpoints require token authentication (`Authorization: Bearer <token>`) AND the associated token role must be `admin`.*
 
-#### 7. `GET /api/admin/users`
+#### 9. `GET /api/admin/users`
 - **Description:** Retrieves a safe list of all registered users in the system, showing only their ID, username, role, and status.
 - **Responses:**
   - `200 OK`: Array of users in JSON format.
 
-#### 8. `POST /api/admin/users/:id/approve`
+#### 10. `POST /api/admin/users/:id/approve`
 - **Description:** Allows approving users so their status changes from `pending` to `active`, enabling them to log in.
 - **URL Parameters:** `id` -> User ID.
 - **Responses:**
   - `200 OK`: User approved.
   - `404 Not Found`: User does not exist.
 
-#### 9. `POST /api/admin/users/:id/promote`
+#### 11. `POST /api/admin/users/:id/promote`
 - **Description:** Changes an existing user's role from `user` to `admin`.
 - **URL Parameters:** `id` -> User ID.
 - **Responses:**
   - `200 OK`: User successfully promoted.
   - `404 Not Found`: User does not exist.
 
-#### 10. `POST /api/admin/users/:id/reset-password`
+#### 12. `POST /api/admin/users/:id/reset-password`
 - **Description:** Allows the Admin to reset and enforce a new password for a specific user.
 - **URL Parameters:** `id` -> User ID.
 - **Body (JSON):** `{ "newPassword": "..." }`
@@ -212,7 +212,7 @@ Below is the technical documentation for each endpoint available in the backend 
   - `400 Bad Request`: Password not provided.
   - `404 Not Found`: User does not exist.
 
-#### 11. `DELETE /api/admin/users/:id`
+#### 13. `DELETE /api/admin/users/:id`
 - **Description:** Permanently deletes a user from the system.
 - **URL Parameters:** `id` -> User ID.
 - **Responses:**
